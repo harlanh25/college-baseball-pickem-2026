@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>College Baseball Pick-Em 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0a1628;--navy2:#112240;--blue:#1d4ed8;--blue-light:#3b82f6;
+  --gold:#f59e0b;--gold-light:#fcd34d;--green:#10b981;--red:#ef4444;
+  --surface2:#162d4a;--text:#f1f5f9;--text-muted:#94a3b8;
+  --border:rgba(255,255,255,0.1);--radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--navy);color:var(--text);min-height:100vh}
+
+/* BANNER */
+.banner{background:var(--navy2);border-bottom:1px solid rgba(255,255,255,0.08);padding:10px 0;overflow:hidden;position:relative}
+.banner-track{display:flex;align-items:center;gap:28px;padding:0 20px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.banner-track::-webkit-scrollbar{display:none}
+.banner-team{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:56px;cursor:default}
+.banner-team img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(245,158,11,0.2))}
+.banner-team span{font-size:9px;font-weight:600;letter-spacing:.04em;color:var(--text-muted);text-align:center;white-space:nowrap}
+.banner-divider{width:1px;height:36px;background:rgba(255,255,255,0.08);flex-shrink:0}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,#0a1628 0%,#1a3a6e 60%,#0a1628 100%);border-bottom:2px solid var(--gold);padding:1.5rem 1.5rem 1.25rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'⚾';position:absolute;font-size:200px;opacity:0.03;top:-30px;right:-30px;line-height:1}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,6vw,3.5rem);letter-spacing:.05em;color:#fff;line-height:1;margin-bottom:4px}
+.hero h1 span{color:var(--gold)}
+.hero p{font-size:13px;color:var(--text-muted);margin-top:4px}
+.hero-sub{font-size:11px;color:rgba(148,163,184,0.6);margin-top:6px}
+
+/* NAME BAR */
+.name-bar{background:var(--navy2);border-bottom:1px solid var(--border);padding:10px 1.5rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.name-bar label{font-size:13px;color:var(--text-muted);white-space:nowrap}
+.name-bar input{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:14px;color:var(--text);width:170px;font-family:'Inter',sans-serif}
+.name-bar input:focus{outline:none;border-color:var(--blue-light)}
+.prog-wrap{flex:1;min-width:120px}
+.prog-track{background:rgba(255,255,255,0.08);border-radius:3px;height:5px;margin-bottom:3px}
+.prog-fill{height:5px;border-radius:3px;background:linear-gradient(90deg,var(--blue-light),var(--gold));transition:width .3s;width:0%}
+.prog-label{font-size:11px;color:var(--text-muted)}
+
+/* TABS */
+.tabs{display:flex;background:var(--navy2);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:11px 18px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--text-muted);border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.bdg{background:rgba(245,158,11,0.15);color:var(--gold);font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600}
+.bdg.ok{background:rgba(16,185,129,0.15);color:var(--green)}
+
+/* CONTENT */
+.content{padding:1.25rem;max-width:1100px;margin:0 auto}
+.ptitle{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.05em;color:var(--gold);margin-bottom:3px}
+.psub{font-size:12px;color:var(--text-muted);margin-bottom:1.25rem}
+
+/* REGIONAL CARDS */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;margin-bottom:1.5rem}
+.rcard{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;transition:border-color .15s}
+.rcard.done{border-color:rgba(16,185,129,0.4)}
+.rname{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);opacity:0}
+.rcard.done .dot{opacity:1}
+.rdiv{font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin:7px 0 4px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.06)}
+
+/* TEAM BUTTONS */
+.tbtn{display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;cursor:pointer;margin-bottom:3px;font-family:'Inter',sans-serif;transition:all .12s}
+.tbtn:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.15)}
+.tbtn.sel{background:rgba(29,78,216,0.22);border-color:var(--blue-light)}
+.tbtn.sel .tn{color:#93c5fd;font-weight:500}
+.tbtn.wp{background:rgba(245,158,11,0.13);border-color:var(--gold)}
+.tbtn.wp .tn{color:var(--gold-light);font-weight:500}
+.tbtn.ghost{opacity:.3;cursor:default;pointer-events:none}
+.tlogo{width:24px;height:24px;object-fit:contain;flex-shrink:0;border-radius:2px}
+.tlogo-placeholder{width:24px;height:24px;flex-shrink:0;background:rgba(255,255,255,0.06);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text-muted);font-weight:700}
+.sb{font-size:9px;font-weight:700;background:rgba(255,255,255,0.08);color:var(--text-muted);padding:1px 4px;border-radius:3px;min-width:18px;text-align:center;flex-shrink:0}
+.tbtn.sel .sb{background:var(--blue);color:#fff}
+.tn{font-size:12px;color:var(--text);flex:1;text-align:left}
+.ck{font-size:11px;color:var(--gold);opacity:0;flex-shrink:0}
+.tbtn.sel .ck,.tbtn.wp .ck{opacity:1}
+
+/* SUPER / CWS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.scard{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+.scard.done{border-color:rgba(16,185,129,0.4)}
+.slbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px}
+.ssub{font-size:10px;color:rgba(148,163,184,0.5);margin-bottom:8px}
+.cwssec{margin-bottom:14px}
+.cwsrt{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid rgba(245,158,11,0.15)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:7px}
+
+/* MISC */
+.warn{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius);padding:9px 12px;font-size:12px;color:#fcd34d;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+/* SUBMIT */
+.sub-wrap{max-width:500px;margin:0 auto}
+.scard2{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:10px}
+.scard2 h3{font-size:14px;font-weight:500;margin-bottom:5px}
+.scard2 p{font-size:12px;color:var(--text-muted);line-height:1.6}
+.psum{background:rgba(0,0,0,0.2);border-radius:5px;padding:10px;font-size:11px;font-family:monospace;color:var(--text-muted);max-height:180px;overflow-y:auto;margin:10px 0;line-height:1.9}
+.pl{display:flex;gap:6px}
+.pk{color:rgba(148,163,184,0.4);min-width:140px}
+.pv{color:var(--gold-light)}
+.pe{color:var(--red);opacity:.7}
+.subbtn{width:100%;padding:13px;background:var(--gold);color:var(--navy);border:none;border-radius:var(--radius);font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.08em;cursor:pointer;transition:all .15s;margin-top:5px}
+.subbtn:hover{background:var(--gold-light);transform:translateY(-1px)}
+.subbtn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.success{text-align:center;padding:3rem 1rem;display:none}
+.success .ico{font-size:4rem;margin-bottom:1rem}
+.success h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--green);letter-spacing:.05em;margin-bottom:8px}
+.success p{font-size:13px;color:var(--text-muted)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(10,22,40,0.3);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* LEADERBOARD */
+.lbhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.rfbtn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.rfbtn:hover{background:rgba(255,255,255,0.09);color:var(--text)}
+.lb-loading{text-align:center;padding:3rem;color:var(--text-muted);font-size:14px}
+.lb-error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:var(--radius);padding:12px;color:#fca5a5;font-size:13px;margin-bottom:1rem}
+.lbtable{width:100%;border-collapse:collapse;margin-bottom:1rem}
+.lbtable th{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);padding:7px 10px;border-bottom:1px solid var(--border);text-align:left}
+.lbtable th.n{text-align:right}
+.lbtable td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px}
+.lbtable td.n{text-align:right;font-size:12px;color:var(--text-muted);font-family:monospace}
+.lbtable tr:hover td{background:rgba(255,255,255,0.02)}
+.lbtable tr.me td{background:rgba(245,158,11,0.07)}
+.lbtable tr.me .pname{color:var(--gold);font-weight:500}
+.rnkb{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700;margin-right:6px;background:rgba(255,255,255,0.06);color:var(--text-muted)}
+.r1{background:rgba(245,158,11,0.2);color:var(--gold)}
+.r2{background:rgba(148,163,184,0.15);color:#cbd5e1}
+.r3{background:rgba(180,120,60,0.15);color:#cd7f32}
+.tscore{font-size:15px;font-weight:500;color:var(--text)}
+.sbar{height:3px;border-radius:2px;background:rgba(255,255,255,0.07);flex:1;min-width:50px}
+.sbfill{height:3px;border-radius:2px;background:var(--gold)}
+.nores{font-size:12px;color:var(--text-muted);padding:10px;background:rgba(255,255,255,0.03);border-radius:var(--radius)}
+.rpill{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:3px 10px;font-size:11px;color:#6ee7b7;display:inline-flex;align-items:center;gap:5px;margin:3px}
+.rnd{font-size:9px;color:rgba(110,231,183,0.4)}
+</style>
+</head>
+<body>
+
+<!-- TOP LOGO BANNER -->
+<div class="banner">
+  <div class="banner-track" id="bannerTrack"></div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>College Baseball <span>Pick-Em</span> 2026</h1>
+  <p>NCAA Tournament — Regionals · Super Regionals · College World Series</p>
+  <div class="hero-sub">64 teams · Road to Omaha · May 29 – June 22</div>
+</div>
+
+<!-- NAME BAR -->
+<div class="name-bar">
+  <label>Your name:</label>
+  <input type="text" id="pickerName" placeholder="First Last" oninput="updateProgress()">
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill" id="progressFill"></div></div>
+    <div class="prog-label" id="progressLabel">0 / 47 picks made</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" id="tab-regionals" onclick="showTab('regionals')">Regionals <span class="bdg" id="badge-reg">0/32</span></div>
+  <div class="tab" id="tab-superregionals" onclick="showTab('superregionals')">Super Regionals <span class="bdg" id="badge-sup">0/8</span></div>
+  <div class="tab" id="tab-cws" onclick="showTab('cws')">World Series <span class="bdg" id="badge-cws">0/7</span></div>
+  <div class="tab" id="tab-leaderboard" onclick="showTab('leaderboard')">🏆 Leaderboard</div>
+  <div class="tab" id="tab-submit" onclick="showTab('submit')">Submit Picks</div>
+</div>
+
+<div id="pane-regionals" class="content"></div>
+<div id="pane-superregionals" class="content" style="display:none"></div>
+<div id="pane-cws" class="content" style="display:none"></div>
+<div id="pane-leaderboard" class="content" style="display:none"></div>
+<div id="pane-submit" class="content" style="display:none"></div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdFLjglypXeWkZmXw9iZCVS2P2qmaTdiHNR8Jdo2cJXL17iOx3vy-HxQsxCuYll8f3/exec";
+
+// ESPN CDN logo: https://a.espncdn.com/i/teamlogos/ncaa/500/{id}.png
+const LOGOS = {
+  "UCLA":           "https://a.espncdn.com/i/teamlogos/ncaa/500/26.png",
+  "Cal Poly":       "https://a.espncdn.com/i/teamlogos/ncaa/500/13.png",
+  "Virginia Tech":  "https://a.espncdn.com/i/teamlogos/ncaa/500/259.png",
+  "St. Mary's":     "https://a.espncdn.com/i/teamlogos/ncaa/500/2608.png",
+  "West Virginia":  "https://a.espncdn.com/i/teamlogos/ncaa/500/277.png",
+  "Binghamton":     "https://a.espncdn.com/i/teamlogos/ncaa/500/2066.png",
+  "Wake Forest":    "https://a.espncdn.com/i/teamlogos/ncaa/500/154.png",
+  "Kentucky":       "https://a.espncdn.com/i/teamlogos/ncaa/500/96.png",
+  "Southern Miss":  "https://a.espncdn.com/i/teamlogos/ncaa/500/230.png",
+  "Little Rock":    "https://a.espncdn.com/i/teamlogos/ncaa/500/2029.png",
+  "Virginia":       "https://a.espncdn.com/i/teamlogos/ncaa/500/258.png",
+  "Jax State":      "https://a.espncdn.com/i/teamlogos/ncaa/500/55.png",
+  "Florida":        "https://a.espncdn.com/i/teamlogos/ncaa/500/57.png",
+  "Rider":          "https://a.espncdn.com/i/teamlogos/ncaa/500/2466.png",
+  "Miami (FL)":     "https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png",
+  "Troy":           "https://a.espncdn.com/i/teamlogos/ncaa/500/2653.png",
+  "UNC":            "https://a.espncdn.com/i/teamlogos/ncaa/500/153.png",
+  "VCU":            "https://a.espncdn.com/i/teamlogos/ncaa/500/2670.png",
+  "Tennessee":      "https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png",
+  "East Carolina":  "https://a.espncdn.com/i/teamlogos/ncaa/500/151.png",
+  "Texas A&M":      "https://a.espncdn.com/i/teamlogos/ncaa/500/245.png",
+  "Lamar":          "https://a.espncdn.com/i/teamlogos/ncaa/500/2352.png",
+  "USC":            "https://a.espncdn.com/i/teamlogos/ncaa/500/30.png",
+  "Texas St.":      "https://a.espncdn.com/i/teamlogos/ncaa/500/326.png",
+  "Nebraska":       "https://a.espncdn.com/i/teamlogos/ncaa/500/158.png",
+  "SD Akron St.":   "https://a.espncdn.com/i/teamlogos/ncaa/500/2571.png",
+  "Ole Miss":       "https://a.espncdn.com/i/teamlogos/ncaa/500/145.png",
+  "Arizona St.":    "https://a.espncdn.com/i/teamlogos/ncaa/500/9.png",
+  "Auburn":         "https://a.espncdn.com/i/teamlogos/ncaa/500/2.png",
+  "Milwaukee":      "https://a.espncdn.com/i/teamlogos/ncaa/500/2430.png",
+  "UCF":            "https://a.espncdn.com/i/teamlogos/ncaa/500/2116.png",
+  "NC State":       "https://a.espncdn.com/i/teamlogos/ncaa/500/152.png",
+  "Georgia Tech":   "https://a.espncdn.com/i/teamlogos/ncaa/500/59.png",
+  "UIC":            "https://a.espncdn.com/i/teamlogos/ncaa/500/2724.png",
+  "Oklahoma":       "https://a.espncdn.com/i/teamlogos/ncaa/500/201.png",
+  "The Citadel":    "https://a.espncdn.com/i/teamlogos/ncaa/500/2081.png",
+  "Kansas":         "https://a.espncdn.com/i/teamlogos/ncaa/500/2305.png",
+  "Northeastern":   "https://a.espncdn.com/i/teamlogos/ncaa/500/111.png",
+  "Arkansas":       "https://a.espncdn.com/i/teamlogos/ncaa/500/8.png",
+  "Missouri St.":   "https://a.espncdn.com/i/teamlogos/ncaa/500/2623.png",
+  "Florida State":  "https://a.espncdn.com/i/teamlogos/ncaa/500/52.png",
+  "St. John's":     "https://a.espncdn.com/i/teamlogos/ncaa/500/2550.png",
+  "Coastal Carolina":"https://a.espncdn.com/i/teamlogos/ncaa/500/324.png",
+  "NIU":            "https://a.espncdn.com/i/teamlogos/ncaa/500/2459.png",
+  "Alabama":        "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png",
+  "Alabama St.":    "https://a.espncdn.com/i/teamlogos/ncaa/500/2010.png",
+  "Oklahoma St.":   "https://a.espncdn.com/i/teamlogos/ncaa/500/197.png",
+  "USC Upstate":    "https://a.espncdn.com/i/teamlogos/ncaa/500/2908.png",
+  "Texas":          "https://a.espncdn.com/i/teamlogos/ncaa/500/251.png",
+  "Holy Cross":     "https://a.espncdn.com/i/teamlogos/ncaa/500/107.png",
+  "UCSB":           "https://a.espncdn.com/i/teamlogos/ncaa/500/2540.png",
+  "Tarleton St.":   "https://a.espncdn.com/i/teamlogos/ncaa/500/2627.png",
+  "Oregon":         "https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png",
+  "Yale":           "https://a.espncdn.com/i/teamlogos/ncaa/500/43.png",
+  "Oregon St.":     "https://a.espncdn.com/i/teamlogos/ncaa/500/204.png",
+  "Washington St.": "https://a.espncdn.com/i/teamlogos/ncaa/500/265.png",
+  "Miss. State":    "https://a.espncdn.com/i/teamlogos/ncaa/500/344.png",
+  "Lipscomb":       "https://a.espncdn.com/i/teamlogos/ncaa/500/2374.png",
+  "Cincinnati":     "https://a.espncdn.com/i/teamlogos/ncaa/500/2132.png",
+  "Louisiana":      "https://a.espncdn.com/i/teamlogos/ncaa/500/309.png",
+  "Georgia":        "https://a.espncdn.com/i/teamlogos/ncaa/500/61.png",
+  "LIU":            "https://a.espncdn.com/i/teamlogos/ncaa/500/2799.png",
+  "BC":             "https://a.espncdn.com/i/teamlogos/ncaa/500/103.png",
+  "Liberty":        "https://a.espncdn.com/i/teamlogos/ncaa/500/2335.png",
+};
+
+// Banner schools — featured teams across the top
+const BANNER_TEAMS = [
+  {name:"Florida State", logo: LOGOS["Florida State"]},
+  {name:"Florida",       logo: LOGOS["Florida"]},
+  {name:"Georgia",       logo: LOGOS["Georgia"]},
+  {name:"Georgia Tech",  logo: LOGOS["Georgia Tech"]},
+  {name:"UCLA",          logo: LOGOS["UCLA"]},
+  {name:"Auburn",        logo: LOGOS["Auburn"]},
+  {name:"Alabama",       logo: LOGOS["Alabama"]},
+  {name:"Tennessee",     logo: LOGOS["Tennessee"]},
+  {name:"Texas",         logo: LOGOS["Texas"]},
+  {name:"Texas A&M",     logo: LOGOS["Texas A&M"]},
+  {name:"Arkansas",      logo: LOGOS["Arkansas"]},
+  {name:"Ole Miss",      logo: LOGOS["Ole Miss"]},
+  {name:"Miss. State",   logo: LOGOS["Miss. State"]},
+  {name:"UNC",           logo: LOGOS["UNC"]},
+  {name:"Oregon",        logo: LOGOS["Oregon"]},
+  {name:"Nebraska",      logo: LOGOS["Nebraska"]},
+  {name:"Oklahoma",      logo: LOGOS["Oklahoma"]},
+  {name:"West Virginia", logo: LOGOS["West Virginia"]},
+  {name:"Virginia Tech", logo: LOGOS["Virginia Tech"]},
+  {name:"Wake Forest",   logo: LOGOS["Wake Forest"]},
+  {name:"Kansas",        logo: LOGOS["Kansas"]},
+  {name:"Arizona St.",   logo: LOGOS["Arizona St."]},
+  {name:"NC State",      logo: LOGOS["NC State"]},
+  {name:"Miami (FL)",    logo: LOGOS["Miami (FL)"]},
+];
+
+// Build banner
+(function(){
+  const track = document.getElementById('bannerTrack');
+  BANNER_TEAMS.forEach((team, i) => {
+    const div = document.createElement('div');
+    div.className = 'banner-team';
+    div.innerHTML = `<img src="${team.logo}" alt="${team.name}" onerror="this.style.display='none'"><span>${team.name}</span>`;
+    track.appendChild(div);
+    if(i < BANNER_TEAMS.length - 1) {
+      const div2 = document.createElement('div');
+      div2.className = 'banner-divider';
+      track.appendChild(div2);
+    }
+  });
+})();
+
+function logoImg(teamName) {
+  const url = LOGOS[teamName];
+  if(url) return `<img class="tlogo" src="${url}" alt="${teamName}" onerror="this.outerHTML='<div class=tlogo-placeholder>${teamName.substring(0,3).toUpperCase()}</div>'">`;
+  return `<div class="tlogo-placeholder">${(teamName||'?').substring(0,3).toUpperCase()}</div>`;
+}
+
+const REGIONALS = [
+  {name:"Los Angeles",    teams:[{s:1,t:"UCLA"},{s:16,t:"Cal Poly"},{s:8,t:"Virginia Tech"},{s:9,t:"St. Mary's"}]},
+  {name:"Morgantown",     teams:[{s:1,t:"West Virginia"},{s:16,t:"Binghamton"},{s:8,t:"Wake Forest"},{s:9,t:"Kentucky"}]},
+  {name:"Hattiesburg",    teams:[{s:1,t:"Southern Miss"},{s:16,t:"Little Rock"},{s:8,t:"Virginia"},{s:9,t:"Jax State"}]},
+  {name:"Gainesville",    teams:[{s:1,t:"Florida"},{s:16,t:"Rider"},{s:8,t:"Miami (FL)"},{s:9,t:"Troy"}]},
+  {name:"Chapel Hill",    teams:[{s:1,t:"UNC"},{s:16,t:"VCU"},{s:8,t:"Tennessee"},{s:9,t:"East Carolina"}]},
+  {name:"College Station",teams:[{s:1,t:"Texas A&M"},{s:16,t:"Lamar"},{s:8,t:"USC"},{s:9,t:"Texas St."}]},
+  {name:"Lincoln",        teams:[{s:1,t:"Nebraska"},{s:16,t:"SD Akron St."},{s:8,t:"Ole Miss"},{s:9,t:"Arizona St."}]},
+  {name:"Auburn",         teams:[{s:1,t:"Auburn"},{s:16,t:"Milwaukee"},{s:8,t:"UCF"},{s:9,t:"NC State"}]},
+  {name:"Atlanta",        teams:[{s:2,t:"Georgia Tech"},{s:15,t:"UIC"},{s:7,t:"Oklahoma"},{s:10,t:"The Citadel"}]},
+  {name:"Lawrence",       teams:[{s:2,t:"Kansas"},{s:15,t:"Northeastern"},{s:7,t:"Arkansas"},{s:10,t:"Missouri St."}]},
+  {name:"Tallahassee",    teams:[{s:2,t:"Florida State"},{s:15,t:"St. John's"},{s:7,t:"Coastal Carolina"},{s:10,t:"NIU"}]},
+  {name:"Tuscaloosa",     teams:[{s:2,t:"Alabama"},{s:15,t:"Alabama St."},{s:7,t:"Oklahoma St."},{s:10,t:"USC Upstate"}]},
+  {name:"Austin",         teams:[{s:2,t:"Texas"},{s:15,t:"Holy Cross"},{s:7,t:"UCSB"},{s:10,t:"Tarleton St."}]},
+  {name:"Eugene",         teams:[{s:2,t:"Oregon"},{s:15,t:"Yale"},{s:7,t:"Oregon St."},{s:10,t:"Washington St."}]},
+  {name:"Starkville",     teams:[{s:2,t:"Miss. State"},{s:15,t:"Lipscomb"},{s:7,t:"Cincinnati"},{s:10,t:"Louisiana"}]},
+  {name:"Athens",         teams:[{s:3,t:"Georgia"},{s:14,t:"LIU"},{s:6,t:"BC"},{s:11,t:"Liberty"}]},
+];
+
+const SUPER_PAIRINGS = [[0,8],[1,9],[2,10],[3,11],[4,12],[5,13],[6,14],[7,15]];
+const picks = {regionals:{}, superregionals:{}, cws:{}};
+
+function pick(category, key, value) {
+  picks[category][key] = value;
+  updateProgress();
+  renderAll();
+}
+
+function getRegWinner(ri) { return picks.regionals[ri+'_final'] || null; }
+function getSupWinner(si) { return picks.superregionals['sup_'+si] || null; }
+
+function countPicks() {
+  let reg=0, sup=0, cws=0;
+  for(let i=0;i<16;i++) { if(picks.regionals[i+'_r1a'])reg++; if(picks.regionals[i+'_r1b'])reg++; if(picks.regionals[i+'_final'])reg++; }
+  for(let i=0;i<8;i++) if(picks.superregionals['sup_'+i]) sup++;
+  for(let i=0;i<4;i++) if(picks.cws['cws_r1_'+i]) cws++;
+  if(picks.cws['cws_sf1']) cws++; if(picks.cws['cws_sf2']) cws++; if(picks.cws['cws_champ']) cws++;
+  return {reg, sup, cws, total:reg+sup+cws};
+}
+
+function updateProgress() {
+  const c = countPicks();
+  document.getElementById('progressFill').style.width = Math.round(c.total/47*100)+'%';
+  document.getElementById('progressLabel').textContent = c.total+' / 47 picks made';
+  const rb=document.getElementById('badge-reg'), sb=document.getElementById('badge-sup'), cb=document.getElementById('badge-cws');
+  rb.textContent=c.reg+'/32'; rb.className='bdg'+(c.reg===32?' ok':'');
+  sb.textContent=c.sup+'/8';  sb.className='bdg'+(c.sup===8?' ok':'');
+  cb.textContent=c.cws+'/7';  cb.className='bdg'+(c.cws===7?' ok':'');
+}
+
+function esc(s) { return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+function renderAll() { renderRegionals(); renderSuper(); renderCWS(); renderSubmit(); }
+
+function teamBtn(t, sel, cls, onclick) {
+  return `<button class="tbtn${sel?' '+cls:''}" onclick="${onclick}">${logoImg(t.t||t)}<span class="sb">${t.s||'★'}</span><span class="tn">${t.t||t}</span><span class="ck">✓</span></button>`;
+}
+
+function renderRegionals() {
+  let h = `<div class="ptitle">Regionals</div><div class="psub">Pick each game winner, then the regional champion.</div><div class="rgrid">`;
+  REGIONALS.forEach((reg, ri) => {
+    const p=reg.teams, a=picks.regionals[ri+'_r1a'], b=picks.regionals[ri+'_r1b'], f=picks.regionals[ri+'_final'];
+    h += `<div class="rcard${f?' done':''}"><div class="rname">${reg.name} Regional<div class="dot"></div></div>`;
+    h += `<div class="rdiv">Game 1</div>`;
+    [p[0],p[3]].forEach(t => { h += `<button class="tbtn${a===t.t?' sel':''}" onclick="pick('regionals','${ri}_r1a','${esc(t.t)}')">${logoImg(t.t)}<span class="sb">${t.s}</span><span class="tn">${t.t}</span><span class="ck">✓</span></button>`; });
+    h += `<div class="rdiv">Game 2</div>`;
+    [p[1],p[2]].forEach(t => { h += `<button class="tbtn${b===t.t?' sel':''}" onclick="pick('regionals','${ri}_r1b','${esc(t.t)}')">${logoImg(t.t)}<span class="sb">${t.s}</span><span class="tn">${t.t}</span><span class="ck">✓</span></button>`; });
+    if(a || b) {
+      h += `<div class="rdiv">Regional Champion</div>`;
+      [a||null, b||null].forEach((t,idx) => {
+        if(!t) h += `<button class="tbtn ghost"><div class="tlogo-placeholder">?</div><span class="sb">?</span><span class="tn">Pick Game ${idx+1} first</span></button>`;
+        else h += `<button class="tbtn${f===t?' wp':''}" onclick="pick('regionals','${ri}_final','${esc(t)}')">${logoImg(t)}<span class="sb">★</span><span class="tn">${t}</span><span class="ck">✓</span></button>`;
+      });
+    }
+    h += `</div>`;
+  });
+  h += `</div>`;
+  document.getElementById('pane-regionals').innerHTML = h;
+}
+
+function renderSuper() {
+  const winners = REGIONALS.map((_,ri) => getRegWinner(ri));
+  const inc = winners.filter(x=>!x).length;
+  let h = `<div class="ptitle">Super Regionals</div><div class="psub">Pick who advances to Omaha.</div>`;
+  if(inc>0) h += `<div class="warn">⚠ ${inc} regional winner${inc>1?'s':''} not yet picked.</div>`;
+  h += `<div class="sgrid">`;
+  SUPER_PAIRINGS.forEach((pair, si) => {
+    const t1=winners[pair[0]], t2=winners[pair[1]], sel=picks.superregionals['sup_'+si];
+    h += `<div class="scard${sel?' done':''}"><div class="slbl">Super Regional ${si+1}</div><div class="ssub">${REGIONALS[pair[0]].name} vs ${REGIONALS[pair[1]].name}</div>`;
+    [t1,t2].forEach((t,idx) => {
+      if(!t) h += `<button class="tbtn ghost"><div class="tlogo-placeholder">?</div><span class="sb">?</span><span class="tn">${REGIONALS[pair[idx]].name} winner</span></button>`;
+      else h += `<button class="tbtn${sel===t?' wp':''}" onclick="pick('superregionals','sup_${si}','${esc(t)}')">${logoImg(t)}<span class="sb">★</span><span class="tn">${t}</span><span class="ck">✓</span></button>`;
+    });
+    h += `</div>`;
+  });
+  h += `</div>`;
+  document.getElementById('pane-superregionals').innerHTML = h;
+}
+
+function renderCWS() {
+  const sw = Array.from({length:8},(_,i)=>getSupWinner(i));
+  const inc = sw.filter(x=>!x).length;
+  let h = `<div class="ptitle">College World Series</div><div class="psub">Pick your way to the national champion in Omaha.</div>`;
+  if(inc>0) h += `<div class="warn">⚠ ${inc} super regional pick${inc>1?'s':''} missing.</div>`;
+  h += `<div class="cwssec"><div class="cwsrt">CWS First Round (8 → 4)</div><div class="cgrid">`;
+  for(let i=0;i<4;i++) {
+    const t1=sw[i*2], t2=sw[i*2+1], key='cws_r1_'+i, sel=picks.cws[key];
+    [t1,t2].forEach(t => {
+      if(!t) h += `<button class="tbtn ghost"><div class="tlogo-placeholder">?</div><span class="sb">?</span><span class="tn">TBD</span></button>`;
+      else h += `<button class="tbtn${sel===t?' wp':''}" onclick="pick('cws','${key}','${esc(t)}')">${logoImg(t)}<span class="sb">⚾</span><span class="tn">${t}</span><span class="ck">✓</span></button>`;
+    });
+  }
+  h += `</div></div>`;
+  const sf1a=picks.cws['cws_r1_0'], sf1b=picks.cws['cws_r1_1'], sf2a=picks.cws['cws_r1_2'], sf2b=picks.cws['cws_r1_3'];
+  h += `<div class="cwssec"><div class="cwsrt">CWS Semifinals (4 → 2)</div><div class="cgrid">`;
+  [[sf1a,sf1b,'cws_sf1'],[sf2a,sf2b,'cws_sf2']].forEach(([a,b,k]) => {
+    [a,b].forEach(t => {
+      if(!t) h += `<button class="tbtn ghost"><div class="tlogo-placeholder">?</div><span class="sb">?</span><span class="tn">TBD</span></button>`;
+      else h += `<button class="tbtn${picks.cws[k]===t?' wp':''}" onclick="pick('cws','${k}','${esc(t)}')">${logoImg(t)}<span class="sb">⚾</span><span class="tn">${t}</span><span class="ck">✓</span></button>`;
+    });
+  });
+  h += `</div></div>`;
+  const fin1=picks.cws['cws_sf1'], fin2=picks.cws['cws_sf2'];
+  h += `<div class="cwssec"><div class="cwsrt">National Champion 🏆</div><div class="cgrid">`;
+  [fin1,fin2].forEach(t => {
+    if(!t) h += `<button class="tbtn ghost"><div class="tlogo-placeholder">?</div><span class="sb">?</span><span class="tn">TBD</span></button>`;
+    else h += `<button class="tbtn${picks.cws['cws_champ']===t?' wp':''}" onclick="pick('cws','cws_champ','${esc(t)}')">${logoImg(t)}<span class="sb">🏆</span><span class="tn">${t}</span><span class="ck">✓</span></button>`;
+  });
+  h += `</div></div>`;
+  document.getElementById('pane-cws').innerHTML = h;
+}
+
+function renderSubmit() {
+  const c=countPicks(), name=document.getElementById('pickerName').value.trim(), champ=picks.cws['cws_champ']||'—';
+  let sum='';
+  REGIONALS.forEach((reg,ri)=>{ const w=picks.regionals[ri+'_final']; sum+=`<div class="pl"><span class="pk">${reg.name}:</span><span class="${w?'pv':'pe'}">${w||'not picked'}</span></div>`; });
+  for(let i=0;i<8;i++){ const w=picks.superregionals['sup_'+i]; sum+=`<div class="pl"><span class="pk">Super Regional ${i+1}:</span><span class="${w?'pv':'pe'}">${w||'not picked'}</span></div>`; }
+  sum+=`<div class="pl"><span class="pk">National Champion:</span><span class="${picks.cws['cws_champ']?'pv':'pe'}">${picks.cws['cws_champ']||'not picked'}</span></div>`;
+  document.getElementById('pane-submit').innerHTML = `
+    <div id="submitForm"><div class="sub-wrap">
+      <div class="scard2">
+        <h3>Review your picks</h3>
+        <p>Double-check everything, then submit. You can't change picks after submitting.</p>
+        <div class="psum">${sum}</div>
+        ${!name?'<div class="warn">⚠ Enter your name at the top before submitting.</div>':''}
+        ${c.total<47?`<div class="warn">⚠ ${47-c.total} picks remaining — you can still submit but blanks won't score.</div>`:''}
+        <button class="subbtn" onclick="submitPicks()" ${!name?'disabled':''}>Submit My Picks${champ!=='—'?' — '+champ+' wins it all':''}</button>
+        ${!name?'<div style="font-size:11px;color:var(--red);text-align:center;margin-top:6px">Enter your name to enable submit</div>':''}
+      </div>
+    </div></div>
+    <div class="success" id="successScreen">
+      <div class="ico">⚾</div>
+      <h2>Picks Submitted!</h2>
+      <p id="successMsg">Your bracket has been saved. Good luck!</p>
+    </div>`;
+}
+
+async function submitPicks() {
+  const name = document.getElementById('pickerName').value.trim();
+  if(!name) { alert('Please enter your name first.'); return; }
+  const btn = document.querySelector('.subbtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Submitting...';
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name, picks}) });
+    document.getElementById('submitForm').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    document.getElementById('successMsg').textContent = name+"'s picks have been saved. Good luck!";
+  } catch(err) {
+    btn.disabled = false; btn.innerHTML = 'Submit My Picks';
+    alert('Something went wrong. Please try again.');
+  }
+}
+
+// LEADERBOARD
+async function loadLeaderboard() {
+  const pane = document.getElementById('pane-leaderboard');
+  pane.innerHTML = `<div class="lb-loading"><span class="spinner" style="border-top-color:var(--gold);border-color:rgba(245,158,11,0.2)"></span> Loading leaderboard...</div>`;
+  try {
+    const res = await fetch(SCRIPT_URL + '?action=leaderboard');
+    const data = await res.json();
+    renderLeaderboard(data);
+  } catch(err) {
+    pane.innerHTML = `<div class="lb-error">⚠ Could not load leaderboard. Make sure the script is deployed and try refreshing.<br><small>${err}</small></div>`;
+  }
+}
+
+function renderLeaderboard(data) {
+  const myName = document.getElementById('pickerName').value.trim().toLowerCase();
+  const scores = data.scores || [];
+  const results = data.results || [];
+  let h = `<div class="lbhdr"><div><div class="ptitle">Live Leaderboard</div><div class="psub">Scores update when results are entered in the sheet.</div></div>
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;color:var(--text-muted)">${data.lastUpdated||''}</span>
+    <button class="rfbtn" onclick="loadLeaderboard()">↻ Refresh</button></div></div>`;
+  if(scores.length===0) {
+    h += `<div class="nores">No picks submitted yet — be the first!</div>`;
+  } else {
+    h += `<table class="lbtable"><thead><tr><th>Rank</th><th>Player</th><th class="n">Total</th><th class="n">Reg</th><th class="n">Supers</th><th class="n">CWS</th><th class="n">Champ</th><th>Progress</th></tr></thead><tbody>`;
+    scores.forEach((s,i) => {
+      const rank=i+1, isMe=s.name.toLowerCase()===myName;
+      const rc=rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
+      const pct=Math.round(s.total/58*100);
+      h += `<tr class="${isMe?'me':''}"><td><span class="rnkb ${rc}">${rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank}</span></td>
+        <td class="pname">${s.name}${isMe?' (you)':''}</td>
+        <td class="n"><span class="tscore">${s.total}</span></td>
+        <td class="n">${s.regionals}</td><td class="n">${s.supers}</td><td class="n">${s.cws}</td><td class="n">${s.champion}</td>
+        <td><div style="display:flex;align-items:center;gap:6px"><div class="sbar"><div class="sbfill" style="width:${pct}%"></div></div><span style="font-size:10px;color:var(--text-muted);white-space:nowrap">${s.correct} correct</span></div></td></tr>`;
+    });
+    h += `</tbody></table><div style="font-size:10px;color:#475569;margin-bottom:1.5rem">Regional=1pt · Super=2pts · CWS R1=3pts · Semi=4pts · Champion=6pts · Max: 58pts</div>`;
+  }
+  h += `<div class="ptitle" style="font-size:1.1rem;margin-bottom:8px">Results so far</div>`;
+  if(results.length===0) { h += `<div class="nores">No results entered yet — check back after games are played.</div>`; }
+  else {
+    h += `<div style="display:flex;flex-wrap:wrap;gap:4px">`;
+    results.forEach(r => { h += `<span class="rpill"><span class="rnd">${r.round}</span>${r.winner}<span class="rnd">(${r.points}pt)</span></span>`; });
+    h += `</div>`;
+  }
+  document.getElementById('pane-leaderboard').innerHTML = h;
+}
+
+function showTab(t) {
+  ['regionals','superregionals','cws','leaderboard','submit'].forEach(x => {
+    document.getElementById('pane-'+x).style.display = x===t?'block':'none';
+    document.getElementById('tab-'+x).classList.toggle('active', x===t);
+  });
+  if(t==='submit') renderSubmit();
+  if(t==='leaderboard') loadLeaderboard();
+}
+
+renderAll();
+updateProgress();
+</script>
+</body>
+</html>
